@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Business.Concrete;
+using DataAccess.Concrete.EntityFramework;
 using DataAccess.Concrete.InMemory;
 using Entities.Concrete;
 
@@ -10,40 +11,39 @@ namespace ConsoleUI
     {
         static void Main(string[] args)
         {
-            // GetAll TEST
-            CarManager carManager = new CarManager(new InMemoryCarDal());
+            CarManager carManager = new CarManager(new EfCarDal());
+            
+            // Liste
             foreach (var car in carManager.GetAll())
             {
                 Console.WriteLine(car.ModelYear + " Model - Günlük " + car.DailyPrice + " TL - " + car.Description);
             }
 
-            Console.WriteLine("==========");
+            Console.WriteLine("====================");
 
-            // GetById TEST
-            Console.WriteLine((carManager.GetById(1)).Description);
+            // Sisteme Araba Ekleme
+            carManager.Add(new Car { CarId = 6, BrandId = 2, ColorId = 2, ModelYear = 2015, DailyPrice = 275, Description = "Reno" });
 
-            Console.WriteLine("==========");
+            Console.WriteLine("====================");
 
-            // Add TEST
-            Car car1 = new Car() { Id = 6, BrandId = 4, ColorId = 3, ModelYear = 2018, DailyPrice = 425, Description = "Uçak gibi araba." };
-            carManager.Add(car1);
-
+            // Yeni Liste
             foreach (var car in carManager.GetAll())
             {
                 Console.WriteLine(car.ModelYear + " Model - Günlük " + car.DailyPrice + " TL - " + car.Description);
             }
 
-            Console.WriteLine("==========");
+            Console.WriteLine("====================");
 
-            // Update TEST
-            carManager.Update(car1);
+            // Marka ID'si 2 olan arabaları getirir.
+            foreach (var car in carManager.GetCarsByBrandId(2))
+            {
+                Console.WriteLine(car.ModelYear + " Model - Günlük " + car.DailyPrice + " TL - " + car.Description);
+            }
 
-            Console.WriteLine("==========");
+            Console.WriteLine("====================");
 
-            // Delete TEST
-            carManager.Delete(car1);
-
-            foreach (var car in carManager.GetAll())
+            // Renk ID'si 2 olan arabaları getirir.
+            foreach (var car in carManager.GetCarsByColorId(2))
             {
                 Console.WriteLine(car.ModelYear + " Model - Günlük " + car.DailyPrice + " TL - " + car.Description);
             }

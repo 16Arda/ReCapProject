@@ -18,12 +18,35 @@ namespace Business.Concrete
 
         public void Add(Car car)
         {
-            _carDal.Add(car);
+            try
+            {
+                if (car.Description.Length < 2)
+                {
+                    Console.WriteLine("Aracın açıklaması 2 karakterden küçük olamaz!");
+                }
+                else
+                {
+                    if (car.DailyPrice <= 0)
+                    {
+                        Console.WriteLine("Aracın günlük kirası 0'dan büyük olmalıdır!");
+                    }
+                    else
+                    {
+                        _carDal.Add(car);
+                        Console.WriteLine("Araç başarıyla eklendi : " + car.Description);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Hata nedeniyle araç eklenemedi! Hata : " + e.Message);
+            }
         }
 
         public void Delete(Car car)
         {
             _carDal.Delete(car);
+            Console.WriteLine("Araç başarıyla silindi : " + car.Description);
         }
 
         public List<Car> GetAll()
@@ -31,9 +54,14 @@ namespace Business.Concrete
             return _carDal.GetAll();
         }
 
-        public Car GetById(int id)
+        public List<Car> GetCarsByBrandId(int id)
         {
-            return _carDal.GetById(id);
+            return _carDal.GetAll(c => c.BrandId == id);
+        }
+
+        public List<Car> GetCarsByColorId(int id)
+        {
+            return _carDal.GetAll(c => c.ColorId == id);
         }
 
         public void Update(Car car)
