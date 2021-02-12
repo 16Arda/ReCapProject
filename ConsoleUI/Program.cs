@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Business.Concrete;
+using Business.Constants;
+using Core.Utilities.Results;
 using DataAccess.Concrete.EntityFramework;
 using DataAccess.Concrete.InMemory;
 using Entities.Concrete;
@@ -14,50 +16,39 @@ namespace ConsoleUI
             CarManager carManager = new CarManager(new EfCarDal());
             BrandManager brandManager = new BrandManager(new EfBrandDal());
             ColorManager colorManager = new ColorManager(new EfColorDal());
+            RentalManager rentalManager = new RentalManager(new EfRentalDal());
+            UserManager userManager = new UserManager(new EfUserDal());
+            CustomerManager customerManager = new CustomerManager(new EfCustomerDal());
 
-            foreach (var car in carManager.GetCarDetails())
+            var result = carManager.GetCarDetails();
+
+            if (result.Success == true)
             {
-                Console.WriteLine(car.BrandName + " Marka - " + car.ColorName + " Renk - " + car.ModelYear + " Model - Günlük " + car.DailyPrice + " TL - " + car.Description);
+                foreach (var car in result.Data)
+                {
+                    Console.WriteLine(car.BrandName + " Marka - " + car.ColorName + " Renk - " + car.ModelYear + " Model - Günlük " + car.DailyPrice + " TL - " + car.Description);
+                }
             }
 
-            brandManager.Add(new Brand { BrandName = "Vay" });
+            var result2 = brandManager.Add(new Brand { BrandName = "ABC" });
+            if (result2.Success == true)
+            {
+                Console.WriteLine(result2.Message);
+            }
+
+            carManager.Add(new Car { BrandId = 1, ColorId = 1, DailyPrice = 50, Description = "ABC", ModelYear = 2015 });
+
+            var tarih = DateTime.Now;
+            rentalManager.Add(new Rental { CarId = 1, CustomerId = 1, RentDate = tarih, ReturnDate = tarih });
 
             colorManager.Add(new Color { ColorName = "Kırmızı" });
 
             colorManager.Add(new Color { ColorName = "Pembe" });
 
-        }
-
-        // Liste
-        private static void GetCarsByColorIdTest(CarManager carManager)
-        {
-            foreach (var car in carManager.GetCarsByColorId(2))
+            var result3 = userManager.Add(new User { FirstName = "Arda", LastName = "A", Email = "asdasd", Password = "asdasd" });
+            if (result3.Success == true)
             {
-                Console.WriteLine(car.ModelYear + " Model - Günlük " + car.DailyPrice + " TL - " + car.Description);
-            }
-        }
-
-        // Marka ID'si 2 olan arabaları getirir.
-        private static void GetCarsByBrandIdTest(CarManager carManager)
-        {
-            foreach (var car in carManager.GetCarsByBrandId(2))
-            {
-                Console.WriteLine(car.ModelYear + " Model - Günlük " + car.DailyPrice + " TL - " + car.Description);
-            }
-        }
-
-        // Sisteme Araba Ekleme
-        private static void AddTest(CarManager carManager)
-        {
-            carManager.Add(new Car { BrandId = 2, ColorId = 2, ModelYear = 2015, DailyPrice = 275, Description = "Reno" });
-        }
-
-        // Renk ID'si 2 olan arabaları getirir.
-        private static void GetAllTest(CarManager carManager)
-        {
-            foreach (var car in carManager.GetAll())
-            {
-                Console.WriteLine(car.ModelYear + " Model - Günlük " + car.DailyPrice + " TL - " + car.Description);
+                Console.WriteLine(result3.Message);
             }
         }
     }
