@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -19,26 +21,11 @@ namespace Business.Concrete
             _carDal = carDal;
         }
 
+        [ValidationAspect(typeof(CarValidator))]
         public IResult Add(Car car)
         {
-            if (car.Description.Length < 2)
-            {
-                Console.WriteLine("Aracın açıklaması 2 karakterden küçük olamaz!");
-                return new ErrorResult(Messages.CarNameInvalid);
-            }
-            else
-            {
-                if (car.DailyPrice <= 0)
-                {
-                    Console.WriteLine("Aracın günlük kirası 0'dan büyük olmalıdır!");
-                    return new ErrorResult(Messages.CarDailyPriceInvalid);
-                }
-                else
-                {
-                    _carDal.Add(car);
-                    return new SuccessResult(Messages.CarAdded);
-                }
-            }
+            _carDal.Add(car);
+            return new SuccessResult(Messages.CarAdded);
         }
 
         public IResult Delete(Car car)
